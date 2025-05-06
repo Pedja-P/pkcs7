@@ -159,6 +159,13 @@ func (sd *SignedData) AddSignerChain(ee *x509.Certificate, pkey crypto.PrivateKe
 	attrs.Add(OIDAttributeContentType, sd.sd.ContentInfo.ContentType)
 	attrs.Add(OIDAttributeMessageDigest, sd.messageDigest)
 	attrs.Add(OIDAttributeSigningTime, time.Now().UTC())
+	digestAlg := pkix.AlgorithmIdentifier{Algorithm: sd.digestOid}
+	sigAlg := pkix.AlgorithmIdentifier{Algorithm: encryptionOid}
+	cmsAttr, err := newCMSAlgorithmProtectionAttr(digestAlg, sigAlg)
+	if err != nil {
+		return err
+	}
+	attrs.Add(cmsAttr.Type, cmsAttr.Value)
 	for _, attr := range config.ExtraSignedAttributes {
 		attrs.Add(attr.Type, attr.Value)
 	}
