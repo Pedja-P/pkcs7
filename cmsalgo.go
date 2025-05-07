@@ -10,7 +10,7 @@ var oidCMSAlgorithmProtection = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 9, 5
 
 type cmsAlgorithmProtection struct {
 	DigestAlgorithm    pkix.AlgorithmIdentifier
-	SignatureAlgorithm pkix.AlgorithmIdentifier
+	SignatureAlgorithm pkix.AlgorithmIdentifier `asn1:"tag:1,explicit,optional"`
 }
 
 func newCMSAlgorithmProtectionAttr(digestAlg, sigAlg pkix.AlgorithmIdentifier) (Attribute, error) {
@@ -18,20 +18,14 @@ func newCMSAlgorithmProtectionAttr(digestAlg, sigAlg pkix.AlgorithmIdentifier) (
 		DigestAlgorithm:    digestAlg,
 		SignatureAlgorithm: sigAlg,
 	}
-	val, err := asn1.Marshal(cmsProt)
+	value, err := asn1.Marshal(cmsProt)
 	if err != nil {
 		return Attribute{}, fmt.Errorf("failed to marshal CMS algorithm protection attributes: %v", err)
 	}
-	attr := Attribute{
-		Type: oidCMSAlgorithmProtection,
-		Value: asn1.RawValue{
-			Class:      asn1.ClassUniversal,
-			Tag:        asn1.TagSet,
-			IsCompound: true,
-			Bytes:      encodeAsSet(val),
-		},
-	}
-	return attr, nil
+	return Attribute{
+		Type:  oidCMSAlgorithmProtection,
+		Value: asn1.RawValue{Class: 0, Tag: asn1.TagSequence, IsCompound: true, Bytes: value},
+	}, nil
 }
 
 func encodeAsSet(data []byte) []byte {
