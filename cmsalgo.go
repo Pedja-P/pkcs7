@@ -9,7 +9,7 @@ func newCMSAlgorithmProtectionAttr() (Attribute, error) {
 		Class:      0,
 		Tag:        asn1.TagSequence,
 		IsCompound: true,
-		Bytes:      mustMarshal(asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 1}),
+		Bytes:      mustMarshal(asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 1}), // sha256 OID
 	})
 	if err != nil {
 		return Attribute{}, err
@@ -36,9 +36,9 @@ func newCMSAlgorithmProtectionAttr() (Attribute, error) {
 		Type: asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 9, 52},
 		Value: asn1.RawValue{
 			Class:      asn1.ClassUniversal,
-			Tag:        asn1.TagSet,
+			Tag:        asn1.TagSequence,
 			IsCompound: true,
-			Bytes:      []byte(final),
+			Bytes:      final,
 		},
 	}, nil
 }
